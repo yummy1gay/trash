@@ -1,0 +1,1757 @@
+components:
+  parameters:
+    APIVersion:
+      description: The version of the API to use
+      example: "2025-06-07"
+      in: header
+      name: X-API-Version
+      required: true
+      schema:
+        type: string
+    UserAgent:
+      description: The user agent of the client
+      example: App/1.0.0 (iOS; iPhone XS; Version 13.3 (Build 17C45); DevicePlatform iOS; DeviceAppID com.usemixy.mixy; DeviceID 1234567890)
+      in: header
+      name: User-Agent
+      required: true
+      schema:
+        format: <app-info> (<device-info>; DevicePlatform <device-platform>; DeviceAppID <device-app-id>; DeviceID <device-id>)
+        type: string
+  responses: {}
+  schemas:
+    Error:
+      additionalProperties: false
+      properties:
+        code:
+          description: A human-readable message providing more details about the error.
+          type: string
+        errors:
+          additionalProperties:
+            anyOf:
+              - items:
+                  type: string
+                type: array
+              - $ref: '#/components/schemas/Errors'
+          title: Errors
+          type: object
+        event_id:
+          description: The unique identifier for the error event. This is useful for tracking and debugging.
+          type: string
+        message:
+          description: For some errors that could be handled programmatically, a short string indicating the error code reported.
+          type: string
+        type:
+          description: The type of error returned. One of `api_error`, `invalid_request_error`, `multi_factor_authorization_required_error`, `idempotency_error`
+          enum:
+            - api_error
+            - invalid_request_error
+            - multi_factor_authorization_required_error
+            - idempotency_error
+          type: string
+      required:
+        - type
+        - message
+      title: Error
+      type: object
+    Errors:
+      additionalProperties:
+        anyOf:
+          - items:
+              type: string
+            type: array
+          - $ref: '#/components/schemas/Errors'
+      title: Errors
+      type: object
+    Event:
+      properties:
+        created:
+          description: When the event was created
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        id:
+          description: Unique identifier for the object.
+          example: 05edea81-98a7-4582-aa7c-040d57cb1858
+          type: string
+        key:
+          description: The event key
+          example: event:test
+          format: lowercase alphanumeric characters, colons, underscores, and hyphens
+          type: string
+        metadata:
+          additionalProperties:
+            type: string
+          description: The event metadata
+          example:
+            baz: qux
+            foo: bar
+          nullable: true
+          type: object
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - event
+          type: string
+      required:
+        - object
+        - id
+        - key
+        - metadata
+        - created
+      title: Event
+      type: object
+    FormUpload:
+      properties:
+        content_type:
+          description: The content type
+          enum:
+            - audio/mp4
+            - audio/x-m4a
+            - audio/mpeg
+            - audio/wav
+            - image/png
+            - image/jpeg
+          example: audio/mp4
+          type: string
+        expires:
+          description: When the upload URL will expire
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        fields:
+          additionalProperties:
+            type: string
+          description: Form fields
+          type: object
+        max_size:
+          description: The maximum size of the upload in bytes
+          example: 20000000
+          type: integer
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - form_upload
+          type: string
+        token:
+          description: The upload token
+          example: upload_token_123
+          type: string
+        type:
+          description: The type of the upload
+          enum:
+            - audio
+            - image
+          example: audio
+          type: string
+        url:
+          description: The upload URL
+          example: https://example.com/
+          type: string
+      required:
+        - object
+        - type
+        - content_type
+        - max_size
+        - expires
+        - token
+        - url
+        - fields
+      title: FormUpload
+      type: object
+    Mashup:
+      properties:
+        created:
+          description: When this mashup was created
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        id:
+          description: Unique identifier for the object.
+          example: 05edea81-98a7-4582-aa7c-040d57cb1858
+          type: string
+        left_track:
+          $ref: '#/components/schemas/Track'
+        left_track_metadata:
+          $ref: '#/components/schemas/MashupTrackMetadata'
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - mashup
+          type: string
+        right_track:
+          $ref: '#/components/schemas/Track'
+        right_track_metadata:
+          $ref: '#/components/schemas/MashupTrackMetadata'
+      required:
+        - object
+        - id
+        - left_track
+        - left_track_metadata
+        - right_track
+        - right_track_metadata
+        - created
+      title: Mashup
+      type: object
+    MashupTrackMetadata:
+      properties:
+        pitch:
+          description: The pitch adjustment in semitones
+          example: "2.5"
+          format: decimal
+          type: string
+        speed:
+          description: The speed adjustment of the track
+          example: "1.0"
+          format: decimal
+          type: string
+        starts_at:
+          description: The start time of the left track in seconds
+          example: "30.57"
+          format: decimal
+          type: string
+        type:
+          description: The type of mashup track metadata
+          enum:
+            - beat
+            - vocal
+          example: beat
+          type: string
+        volume:
+          description: The volume adjustment in decibels
+          example: "-3.0"
+          format: decimal
+          type: string
+      required:
+        - starts_at
+        - type
+        - pitch
+        - volume
+        - speed
+      title: MashupTrackMetadata
+      type: object
+    ProviderParamsApple:
+      properties:
+        code:
+          description: 'The authorization code '
+          example: auth_code_123
+          type: string
+      required:
+        - code
+      title: ProviderParamsApple
+      type: object
+    PushToken:
+      properties:
+        id:
+          description: Unique identifier for the object.
+          example: 05edea81-98a7-4582-aa7c-040d57cb1858
+          type: string
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - push_token
+          type: string
+      required:
+        - object
+        - id
+      title: PushToken
+      type: object
+    Session:
+      properties:
+        expires:
+          description: When the token will expire
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - session
+          type: string
+        renew_expires:
+          description: When the renew token will expire
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        renew_token:
+          description: The renew session token
+          example: rt_123
+          type: string
+        token:
+          description: The session token
+          example: st_123
+          type: string
+      required:
+        - object
+        - token
+        - expires
+        - renew_token
+        - renew_expires
+      title: Session
+      type: object
+    Track:
+      properties:
+        album_art_url:
+          description: The URL of the album art image
+          example: https://example.com/uploads/album_art.png
+          nullable: true
+          type: string
+        artist:
+          description: The track artist
+          example: Artist name
+          type: string
+        audio_preview_url:
+          description: The URL of the audio preview
+          example: https://example.com/uploads/audio_preview.mp4
+          nullable: true
+          type: string
+        audio_url:
+          description: The URL of the audio file
+          example: https://example.com/uploads/audio.mp4
+          type: string
+        bpm:
+          description: The beats per minute of the track
+          example: "120.0"
+          format: decimal
+          nullable: true
+          type: string
+        created:
+          description: When this track was uploaded
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        id:
+          description: Unique identifier for the object.
+          example: 05edea81-98a7-4582-aa7c-040d57cb1858
+          type: string
+        key:
+          description: The musical key of the track
+          example: "0.0"
+          format: decimal
+          nullable: true
+          type: string
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - track
+          type: string
+        preview_start:
+          description: The preview start time in seconds
+          example: "30.57"
+          format: decimal
+          nullable: true
+          type: string
+        title:
+          description: The track title
+          example: Track 1
+          type: string
+        uploader:
+          $ref: '#/components/schemas/User'
+      required:
+        - object
+        - id
+        - uploader
+        - title
+        - artist
+        - preview_start
+        - bpm
+        - key
+        - audio_url
+        - audio_preview_url
+        - album_art_url
+        - created
+      title: Track
+      type: object
+    TrackMetadata:
+      properties:
+        pitch:
+          description: The pitch adjustment in semitones
+          example: "2.5"
+          format: decimal
+          type: string
+        speed:
+          description: The speed adjustment of the track
+          example: "1.0"
+          format: decimal
+          type: string
+        starts_at:
+          description: The start time in seconds
+          example: "30.57"
+          format: decimal
+          type: string
+        type:
+          description: The type of track metadata
+          enum:
+            - beat
+            - vocal
+          example: beat
+          type: string
+        volume:
+          description: The volume adjustment in decibels
+          example: "-3.0"
+          format: decimal
+          type: string
+      required:
+        - starts_at
+        - type
+        - pitch
+        - volume
+        - speed
+      title: TrackMetadata
+      type: object
+    TrackReport:
+      properties:
+        created:
+          description: When the report was created
+          example: "2025-01-01T00:00:00.000000Z"
+          format: date-time
+          type: string
+        id:
+          description: Unique identifier for the object.
+          example: 05edea81-98a7-4582-aa7c-040d57cb1858
+          type: string
+        note:
+          description: The track report note
+          example: This looks like spam
+          nullable: true
+          type: string
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - track_report
+          type: string
+        reason:
+          description: The track report reason
+          enum:
+            - abuse
+            - spam
+            - copyright_infringement
+            - other
+          example: abuse
+          type: string
+      required:
+        - object
+        - id
+        - reason
+        - note
+        - created
+      title: TrackReport
+      type: object
+    User:
+      properties:
+        id:
+          description: Unique identifier for the object.
+          example: 05edea81-98a7-4582-aa7c-040d57cb1858
+          type: string
+        object:
+          description: String representing the object's type. Objects of the same type share the same value.
+          enum:
+            - user
+          type: string
+        username:
+          description: The username
+          example: mixy_user
+          nullable: true
+          type: string
+      required:
+        - object
+        - id
+      title: User
+      type: object
+  securitySchemes:
+    TokenAuth:
+      description: The session or renew token
+      name: authorization
+      scheme: bearer
+      type: http
+info:
+  title: Mixy API
+  version: 0.1.0
+openapi: 3.0.0
+paths:
+  /v1/auth/{provider}/callback:
+    post:
+      callbacks: {}
+      operationId: providerCallback
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The provider
+          example: apple
+          in: path
+          name: provider
+          required: true
+          schema:
+            type: string
+        - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ProviderParamsApple'
+          application/x-www-form-urlencoded:
+            schema:
+              oneOf:
+                - $ref: '#/components/schemas/ProviderParamsApple'
+        description: Provider params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security: []
+      summary: Provider callback
+      tags:
+        - Session
+  /v1/events:
+    post:
+      callbacks: {}
+      operationId: createEvent
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                key:
+                  description: The event key
+                  example: event:1
+                  format: lowercase alphanumeric characters, colons, underscores, and hyphens
+                  type: string
+                metadata:
+                  additionalProperties:
+                    type: string
+                  description: Metadata for the event
+                  example:
+                    baz: qux
+                    foo: bar
+                  type: object
+              required:
+                - key
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                key:
+                  description: The event key
+                  example: event:1
+                  format: lowercase alphanumeric characters, colons, underscores, and hyphens
+                  type: string
+                metadata:
+                  additionalProperties:
+                    type: string
+                  description: Metadata for the event
+                  example:
+                    baz: qux
+                    foo: bar
+                  type: object
+              required:
+                - key
+        description: Event params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Event'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Create event
+      tags:
+        - Event
+  /v1/form-uploads:
+    post:
+      callbacks: {}
+      operationId: createFormUpload
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                content_type:
+                  description: The content type of the file
+                  enum:
+                    - audio/mp4
+                    - audio/x-m4a
+                    - audio/mpeg
+                    - audio/wav
+                    - image/png
+                    - image/jpeg
+                  example: audio/mp4
+                  type: string
+                type:
+                  description: The type of the upload URL
+                  enum:
+                    - audio
+                    - image
+                  example: audio
+                  type: string
+              required:
+                - type
+                - content_type
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                content_type:
+                  description: The content type of the file
+                  enum:
+                    - audio/mp4
+                    - audio/x-m4a
+                    - audio/mpeg
+                    - audio/wav
+                    - image/png
+                    - image/jpeg
+                  example: audio/mp4
+                  type: string
+                type:
+                  description: The type of the upload URL
+                  enum:
+                    - audio
+                    - image
+                  example: audio
+                  type: string
+              required:
+                - type
+                - content_type
+        description: Form upload params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/FormUpload'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Create form upload
+      tags:
+        - FormUpload
+  /v1/mashups:
+    post:
+      callbacks: {}
+      operationId: createMashup
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                left_track_id:
+                  description: The ID of the left track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                left_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+                right_track_id:
+                  description: The ID of the right track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                right_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+              required:
+                - left_track_id
+                - left_track_metadata
+                - right_track_id
+                - right_track_metadata
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                left_track_id:
+                  description: The ID of the left track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                left_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+                right_track_id:
+                  description: The ID of the right track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                right_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+              required:
+                - left_track_id
+                - left_track_metadata
+                - right_track_id
+                - right_track_metadata
+        description: Mashup params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mashup'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Create mashup
+      tags:
+        - Mashup
+  /v1/mashups/{id}:
+    delete:
+      callbacks: {}
+      operationId: deleteMashup
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the mashup
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mashup'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Delete mashup
+      tags:
+        - Mashup
+    get:
+      callbacks: {}
+      operationId: getMashup
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the mashup
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mashup'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Get mashup
+      tags:
+        - Mashup
+    patch:
+      callbacks: {}
+      operationId: updateMashup (2)
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the mashup
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                left_track_id:
+                  description: The ID of the left track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                left_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+                right_track_id:
+                  description: The ID of the right track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                right_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+              required:
+                - left_track_id
+                - left_track_metadata
+                - right_track_id
+                - right_track_metadata
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                left_track_id:
+                  description: The ID of the left track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                left_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+                right_track_id:
+                  description: The ID of the right track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                right_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+              required:
+                - left_track_id
+                - left_track_metadata
+                - right_track_id
+                - right_track_metadata
+        description: Mashup params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mashup'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Update mashup
+      tags:
+        - Mashup
+    put:
+      callbacks: {}
+      operationId: updateMashup
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the mashup
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                left_track_id:
+                  description: The ID of the left track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                left_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+                right_track_id:
+                  description: The ID of the right track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                right_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+              required:
+                - left_track_id
+                - left_track_metadata
+                - right_track_id
+                - right_track_metadata
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                left_track_id:
+                  description: The ID of the left track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                left_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+                right_track_id:
+                  description: The ID of the right track
+                  example: 05edea81-98a7-4582-aa7c-040d57cb1858
+                  type: string
+                right_track_metadata:
+                  $ref: '#/components/schemas/TrackMetadata'
+              required:
+                - left_track_id
+                - left_track_metadata
+                - right_track_id
+                - right_track_metadata
+        description: Mashup params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Mashup'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Update mashup
+      tags:
+        - Mashup
+  /v1/session:
+    delete:
+      callbacks: {}
+      operationId: deleteSession
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Delete session
+      tags:
+        - Session
+  /v1/session/push-token:
+    delete:
+      callbacks: {}
+      operationId: deletePushToken
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushToken'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Deletes user device
+      tags:
+        - PushToken
+    put:
+      callbacks: {}
+      operationId: upsertPushToken
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  description: The device token
+                  example: push-token
+                  type: string
+              required:
+                - token
+              type: object
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                token:
+                  description: The device token
+                  example: push-token
+                  type: string
+              required:
+                - token
+              type: object
+        description: Push token params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/PushToken'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Upserts user device
+      tags:
+        - PushToken
+  /v1/session/renew:
+    post:
+      callbacks: {}
+      operationId: renewSession
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - $ref: '#/components/parameters/UserAgent'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                token:
+                  description: The renew token
+                  example: rt_123
+                  type: string
+              required:
+                - token
+              type: object
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                token:
+                  description: The renew token
+                  example: rt_123
+                  type: string
+              required:
+                - token
+              type: object
+        description: Renew params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Session'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security: []
+      summary: Renew session
+      tags:
+        - Session
+  /v1/tracks:
+    get:
+      callbacks: {}
+      operationId: listTracks
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: A cursor for use in pagination
+          example: g3QAAAA...
+          in: query
+          name: starting_after
+          required: false
+          schema:
+            type: string
+        - description: A cursor for use in pagination
+          example: g3QAAAA...
+          in: query
+          name: starting_before
+          required: false
+          schema:
+            type: string
+        - description: ""
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            description: A limit on the number of objects to be returned
+            example: 10
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: ""
+          in: query
+          name: search
+          required: false
+          schema:
+            description: Case insensitive search term for filtering tracks by title or artist
+            example: Track 1
+            type: string
+        - description: ""
+          in: query
+          name: filter
+          required: false
+          schema:
+            description: Filter tracks
+            enum:
+              - featured
+            example: featured
+            type: string
+        - description: ""
+          in: query
+          name: order_by
+          required: false
+          schema:
+            description: Order tracks
+            enum:
+              - featured
+            example: featured
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Track'
+                    type: array
+                  object:
+                    description: String representing the object's type. Objects of the same type share the same value.
+                    enum:
+                      - list
+                    type: string
+                  starting_after:
+                    description: String representing the page cursor to used for querying the next page.
+                    example: g3QAAAA...
+                    type: string
+                  starting_before:
+                    description: String representing the page cursor to used for querying the previous page.
+                    example: g3QAAAA...
+                    type: string
+                required:
+                  - object
+                  - data
+                type: object
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: List tracks
+      tags:
+        - Track
+    post:
+      callbacks: {}
+      operationId: createTrack
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                album_art_upload_token:
+                  description: The album art upload token
+                  example: upload_token_456
+                  type: string
+                artist:
+                  description: The track artist
+                  example: Artist name
+                  type: string
+                audio_preview_upload_token:
+                  description: The audio preview upload token
+                  example: upload_preview_token_123
+                  type: string
+                audio_upload_token:
+                  description: The audio upload token
+                  example: upload_token_123
+                  type: string
+                bpm:
+                  description: The beats per minute of the track
+                  example: "120.0"
+                  format: decimal
+                  nullable: true
+                  type: string
+                key:
+                  description: The musical key of the track
+                  example: "0.0"
+                  format: decimal
+                  nullable: true
+                  type: string
+                preview_start:
+                  description: The start time of the preview in seconds
+                  example: "30.57"
+                  format: decimal
+                  type: string
+                title:
+                  description: The track title
+                  example: Track 1
+                  type: string
+              required:
+                - title
+                - artist
+                - audio_upload_token
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                album_art_upload_token:
+                  description: The album art upload token
+                  example: upload_token_456
+                  type: string
+                artist:
+                  description: The track artist
+                  example: Artist name
+                  type: string
+                audio_preview_upload_token:
+                  description: The audio preview upload token
+                  example: upload_preview_token_123
+                  type: string
+                audio_upload_token:
+                  description: The audio upload token
+                  example: upload_token_123
+                  type: string
+                bpm:
+                  description: The beats per minute of the track
+                  example: "120.0"
+                  format: decimal
+                  nullable: true
+                  type: string
+                key:
+                  description: The musical key of the track
+                  example: "0.0"
+                  format: decimal
+                  nullable: true
+                  type: string
+                preview_start:
+                  description: The start time of the preview in seconds
+                  example: "30.57"
+                  format: decimal
+                  type: string
+                title:
+                  description: The track title
+                  example: Track 1
+                  type: string
+              required:
+                - title
+                - artist
+                - audio_upload_token
+        description: Track params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Create track
+      tags:
+        - Track
+  /v1/tracks/{id}:
+    delete:
+      callbacks: {}
+      operationId: deleteTrack
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the track
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Delete track
+      tags:
+        - Track
+    get:
+      callbacks: {}
+      operationId: getTrack
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the track
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Get track
+      tags:
+        - Track
+    patch:
+      callbacks: {}
+      operationId: updateTrack (2)
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the track
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                artist:
+                  description: The track artist
+                  example: Artist name
+                  type: string
+                title:
+                  description: The track title
+                  example: Track 1
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                artist:
+                  description: The track artist
+                  example: Artist name
+                  type: string
+                title:
+                  description: The track title
+                  example: Track 1
+                  type: string
+        description: Track params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Update track
+      tags:
+        - Track
+    put:
+      callbacks: {}
+      operationId: updateTrack
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the track
+          in: path
+          name: id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                artist:
+                  description: The track artist
+                  example: Artist name
+                  type: string
+                title:
+                  description: The track title
+                  example: Track 1
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                artist:
+                  description: The track artist
+                  example: Artist name
+                  type: string
+                title:
+                  description: The track title
+                  example: Track 1
+                  type: string
+        description: Track params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Track'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Update track
+      tags:
+        - Track
+  /v1/tracks/{track_id}/reports:
+    post:
+      callbacks: {}
+      operationId: createTrackReport
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: The ID of the track
+          in: path
+          name: track_id
+          required: true
+          schema:
+            type: string
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                note:
+                  description: The report note
+                  example: Looks like spam
+                  type: string
+                reason:
+                  description: The report reason
+                  enum:
+                    - abuse
+                    - spam
+                    - copyright_infringement
+                    - other
+                  example: abuse
+                  type: string
+              required:
+                - reason
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                note:
+                  description: The report note
+                  example: Looks like spam
+                  type: string
+                reason:
+                  description: The report reason
+                  enum:
+                    - abuse
+                    - spam
+                    - copyright_infringement
+                    - other
+                  example: abuse
+                  type: string
+              required:
+                - reason
+        description: Track params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/TrackReport'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Create track report
+      tags:
+        - TrackReport
+  /v1/user:
+    delete:
+      callbacks: {}
+      operationId: deleteUser
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Delete user
+      tags:
+        - User
+    get:
+      callbacks: {}
+      operationId: getUser
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Get user
+      tags:
+        - User
+    patch:
+      callbacks: {}
+      operationId: updateUser (2)
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  description: The username
+                  example: my_username
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                username:
+                  description: The username
+                  example: my_username
+                  type: string
+        description: User params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Update user
+      tags:
+        - User
+    put:
+      callbacks: {}
+      operationId: updateUser
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+      requestBody:
+        content:
+          application/json:
+            schema:
+              properties:
+                username:
+                  description: The username
+                  example: my_username
+                  type: string
+          application/x-www-form-urlencoded:
+            schema:
+              properties:
+                username:
+                  description: The username
+                  example: my_username
+                  type: string
+        description: User params
+        required: true
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/User'
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: Update user
+      tags:
+        - User
+  /v1/user/tracks:
+    get:
+      callbacks: {}
+      operationId: listUserTracks
+      parameters:
+        - $ref: '#/components/parameters/APIVersion'
+        - description: A cursor for use in pagination
+          example: g3QAAAA...
+          in: query
+          name: starting_after
+          required: false
+          schema:
+            type: string
+        - description: A cursor for use in pagination
+          example: g3QAAAA...
+          in: query
+          name: starting_before
+          required: false
+          schema:
+            type: string
+        - description: ""
+          in: query
+          name: limit
+          required: false
+          schema:
+            default: 20
+            description: A limit on the number of objects to be returned
+            example: 10
+            maximum: 100
+            minimum: 1
+            type: integer
+        - description: ""
+          in: query
+          name: search
+          required: false
+          schema:
+            description: Case insensitive search term for filtering tracks by title or artist
+            example: Track 1
+            type: string
+        - description: ""
+          in: query
+          name: filter
+          required: false
+          schema:
+            description: Filter tracks
+            enum:
+              - featured
+            example: featured
+            type: string
+        - description: ""
+          in: query
+          name: order_by
+          required: false
+          schema:
+            description: Order tracks
+            enum:
+              - featured
+            example: featured
+            type: string
+      responses:
+        "200":
+          content:
+            application/json:
+              schema:
+                additionalProperties: false
+                properties:
+                  data:
+                    items:
+                      $ref: '#/components/schemas/Track'
+                    type: array
+                  object:
+                    description: String representing the object's type. Objects of the same type share the same value.
+                    enum:
+                      - list
+                    type: string
+                  starting_after:
+                    description: String representing the page cursor to used for querying the next page.
+                    example: g3QAAAA...
+                    type: string
+                  starting_before:
+                    description: String representing the page cursor to used for querying the previous page.
+                    example: g3QAAAA...
+                    type: string
+                required:
+                  - object
+                  - data
+                type: object
+          description: Successful response.
+        default:
+          content:
+            application/json:
+              schema:
+                $ref: '#/components/schemas/Error'
+          description: Error response.
+      security:
+        - TokenAuth: []
+      summary: List current users tracks
+      tags:
+        - Track
+security:
+  - TokenAuth: []
+servers:
+  - url: https://api.mixyservice.com
+    variables: {}
+tags: []
